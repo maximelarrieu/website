@@ -2,30 +2,83 @@ Après une multitude d'abonnements pris, testés, annulés, repris.. il était t
 
 Ne plus dépendre de service tiers devient de plus en plus important et mon intérêt pour les nouvelles technologies et le bidouillage m'ont emmenés à l'achat de mon premier serveur dédié au montage d'une infra IA ouverte à toutes les idées de projets que j'ai.
 
-***La pièce maitresse de mon laboratoire***
+**Objectif**
 
-Le Lenovo Thinkcenter M70Q. Ce n'est bien sûr pas une machine de guerre mais cela reste un tres bon socle solide pour apprendre, concevoir les premiers projets et avec un capacité d'upgrade intéressante pour faire évoluer son hardware avec ses ambitions (merci pour ça Lenovo).
+Construire une plateforme d'ingénierie IA démontrable.
 
-# test h1
+## La pièce maitresse du laboratoire
 
-dedmkdnen
+*Lenovo ThinkCenter M70Q*
 
-## encore h2
+{% table %}
+- **Composant**
+- **Spécification**
+- **Implication**
+---
+- CPU
+- Intel Core i5-12400T - \
+  6 cœurs / 12 threads, 35 W
+- Orchestration et tâches parallèles courtes
+---
+- iGPU
+- Intel UHD 730 (Quick Sync)
+- Encodage H.264/HEVC matériel - projet streaming envisageable
+---
+- RAM
+- 2×8 Go DDR4-3200 dual channel
+- Évolution vers 32Go voire 64Go pour de nouveaux projets
+{% /table %}
 
-tesst
+Cette configuration locale ne permet pas encore d'itérer ou d'attendre des réponses longues de la part des agents. Les premières réponses attendues seront des sorties courtes (JSON, label, scores).
 
-# mais h1 ici
+Dans ce cas, j'utiliserai des petits modèles (Q4) avec faible contexte (3-4B) qui devraient pouvoir donner un débit de 15-20 tok/s :
 
-## sxnmdiende h2
+- *qwen3.5:4b* : principal
+- *gemma4:e4b/phi4-mini* : alternatives a tester
+- *bge-m3* : embedding
 
-denduieiude
+Néanmoins, beaucoup de projets sont envisageable, a leur échelle, limitée par la machine.
 
-iodjoe
+## Les OS
 
-### blabla h3
+{% table %}
+- Couche
+- Système
+- Rôle
+---
+- Hyperviseur
+- Proxmox VE 9.2 (Debian)
+- Snapshots, Rollbacks, API Terraform
+---
+- VM principale
+- Ubuntu Server 24.04 LTS
+- Porte toute la stack Docker
+---
+- Conteneurs systèmes
+- Debian 13 en LXC
+- Tailscale, services légers..
+{% /table %}
 
-deidoehdoe
+Le choix de passer par Proxmox se justifie grâce aux différentes fonctionnalités a portée de main : possibilité de faire un snapshot avant chaque expérimentation, permettant des rollbacks en 30 secondes. Et une API pilotée par Terraform.
 
-iciici
+## La stack
 
-#### h4 opur voir
+***Socle***\
+Docker + Compose · Caddy (TLS via DNS-01) · Tailscale (zéro port ouvert) · Gitea + runner · Terraform (provider `bpg/proxmox`) · Ansible
+
+***Données***\
+PostgreSQL + **pgvector** · Redis · MinIO (S3 local, mêmes SDK que le cloud) · DuckDB
+
+***Observabilité***\
+\******Langfuse (traces, coûts et latence des appels LLM)
+
+***IA***\
+\********Ollama** (moteur local) · **Open WebUI** (interface chat + vocal) · embeddings BGE-M3 · reranker · **faster-whisper** (transcription) · **Piper** (synthèse vocale) · **n8n** (déclencheurs et plomberie) · **LangGraph** ou **Pydantic AI** (agents codés)
+
+## Plan par étape de la construction du laboratoire
+
+### Vague 1 - Le socle
+
+Premières installations et outils mandatory. Le noyau sera l'OS Proxmox, puis l'acces via Tailscale. Initialisation de Terraform, Ansible et Caddy, avant de mettre en place les premiers systèmes de backup.
+
+### Vague 2 - Premiers usages

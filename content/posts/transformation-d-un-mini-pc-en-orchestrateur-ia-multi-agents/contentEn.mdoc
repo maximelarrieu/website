@@ -1,1 +1,86 @@
+After juggling countless SaaS subscriptions, trials, and cancellations, it was time to take a hands-on approach. Reducing reliance on third-party services had become a priority, and my drive for technical experimentation naturally led me to acquire my first dedicated server.
+
+**The objective**
+
+Design a local, sovereign AI infrastructure capable of supporting all my upcoming projects.
+
+## The lab mastery hardware
+
+*The server : Lenovo ThinkCenter M70Q*
+
+{% table %}
+- **Composant**
+- **Spécification**
+- **Implication**
 ---
+- CPU
+- Intel Core i5-12400T - \
+  6 cœurs / 12 threads, 35 W
+- Orchestration and short-lived parallel tasks
+---
+- iGPU
+- Intel UHD 730 (Quick Sync)
+- Hardware H.264/HEVC encoding - viable streaming project
+---
+- RAM
+- 2×8 Go DDR4-3200 dual channel
+- Upgrade to 32Go (or 64Go) for new projects
+{% /table %}
+
+This local setup doesn't allow for conversations with agents or complex tasks. The initial response attempts will be shorted (JSON, label, scores).
+
+In this case, I will use small quantized models (Q4) with limited parameter size (3-4B), which will yield a throughput of 15-20tok/s :
+
+- qwen3.5:4b : main
+- *gemma4:e4b/phi4-mini* : to be tested
+- *bge-m3* : embeddings
+
+That being said, the agents will carry out specifics actions, short iterations and precise tasks.
+
+## OS used
+
+{% table %}
+- Layer
+- System
+- Role
+---
+- Hypervisor
+- Proxmox VE 9.2 (Debian)
+- Snapshots, Rollbacks, API Terraform
+---
+- main VM
+- Ubuntu Server 24.04 LTS
+- All Docker stack
+---
+- System-conteners
+- Debian 13 en LXC
+- Tailscale, small services..
+{% /table %}
+
+The choice of Proxmox is justified by several key features: it enables instant snapshots before any experimentation, rollbacks in under 30 seconds. And full automation via Terraform thanks to its API.
+
+## The Stack
+
+***Foundations***
+
+Docker + Compose · Caddy (TLS via DNS-01) · Tailscale (0 open port) · Gitea + runner · Terraform (provider `bpg/proxmox`) · Ansible
+
+***Data***
+
+PostgreSQL + **pgvector** · Redis · MinIO (local S3, same SDK in cloud) · DuckDB
+
+***Monitoring***
+
+Langfuse (trace, cost, LLM call latency)
+
+***AI***
+
+Ollama (local engine) · **Open WebUI** (chat + voice interface) · BGE-M3 (embeddings) · reranker · **faster-whisper** (transcription) · **Piper** (voice synthesis/TTS) · **n8n** (triggers and plumbing) · **LangGraph** ou **Pydantic AI** (code-first agents)
+
+## Step by step lab implementation
+
+### 1 - Foundations
+
+Initial deployment and core tool installation. The foundation relies on Proxmox VE, with remote access secured via Tailscale. Terraform, Ansible, and Caddy will be set up before implementing the initial backup system.
+
+### 2 - First uses

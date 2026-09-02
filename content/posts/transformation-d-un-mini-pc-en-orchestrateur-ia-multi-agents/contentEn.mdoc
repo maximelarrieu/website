@@ -29,7 +29,8 @@ Design a local, sovereign AI infrastructure capable of supporting all my upcomin
 
 This local setup doesn't allow for conversations with agents or complex tasks. The initial response attempts will be shorted (JSON, label, scores).
 
-In this case, I will use small quantized models (Q4) with limited parameter size (3-4B), which will yield a throughput of 15-20tok/s :
+\
+In this case, I will use small 3–4B models (3 to 4 billion parameters) quantized to Q4 (weights reduced to 4 bits, making them 4× lighter) with an intentionally reduced context window, aiming for an expected throughput of 15–20 tok/s without blowing up memory usage:
 
 - qwen3.5:4b : main
 - *gemma4:e4b/phi4-mini* : to be tested

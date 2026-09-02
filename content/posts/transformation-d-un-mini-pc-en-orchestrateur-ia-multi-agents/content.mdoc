@@ -29,7 +29,8 @@ Serveur : *Lenovo ThinkCenter M70Q*
 
 Cette configuration locale ne permet pas encore d'itérer ou d'attendre des réponses longues de la part des agents. Les premières réponses attendues seront des sorties courtes (JSON, label, scores).
 
-Dans ce cas, j'utiliserai des petits modèles (Q4) avec faible contexte (3-4B) qui devraient pouvoir donner un débit de 15-20 tok/s :
+\
+Dans ce cas, j'utiliserai de petits modèles de 3-4B (3 à 4 milliards de paramètres) compressés en Q4 (poids réduits à 4 bits, 4× plus légers) et un contexte volontairement réduit, pour un débit attendu de 15-20 tok/s sans faire exploser la mémoire :
 
 - *qwen3.5:4b* : principal
 - *gemma4:e4b/phi4-mini* : alternatives a tester

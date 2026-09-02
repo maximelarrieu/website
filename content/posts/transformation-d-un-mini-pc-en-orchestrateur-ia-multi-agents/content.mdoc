@@ -62,17 +62,17 @@ Le choix de passer par Proxmox se justifie grâce aux différentes fonctionnalit
 
 ## La stack
 
-***Socle***\
+*Socle*\
 Docker + Compose · Caddy (TLS via DNS-01) · Tailscale (zéro port ouvert) · Gitea + runner · Terraform (provider `bpg/proxmox`) · Ansible
 
-***Données***\
-PostgreSQL + **pgvector** · Redis · MinIO (S3 local, mêmes SDK que le cloud) · DuckDB
+*Données*\
+PostgreSQL + pgvector · Redis · MinIO (S3 local, mêmes SDK que le cloud) · DuckDB
 
-***Observabilité***\
+*Observabilité*\
 Langfuse (traces, coûts et latence des appels LLM)
 
-***IA***\
-Ollama (moteur local) · **Open WebUI** (interface chat + vocal) · embeddings BGE-M3 · reranker · **faster-whisper** (transcription) · **Piper** (synthèse vocale) · **n8n** (déclencheurs et plomberie) · **LangGraph** ou **Pydantic AI** (agents codés)
+*IA*\
+Ollama (moteur local) · Open WebUI (interface chat + vocal) · embeddings BGE-M3 · reranker · faster-whisper (transcription) · Piper (synthèse vocale) · n8n (déclencheurs et plomberie) · LangGraph ou Pydantic AI (agents codés)
 
 ## Catalogue de projets
 

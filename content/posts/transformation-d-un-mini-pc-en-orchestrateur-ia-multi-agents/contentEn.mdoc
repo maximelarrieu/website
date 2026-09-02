@@ -79,26 +79,26 @@ Ollama (local engine) · **Open WebUI** (chat + voice interface) · BGE-M3 (embe
 
 ## Project catalog
 
-#### Initial local use cases
+### Initial local use cases
 
-##### Document processing & structured extraction
+#### Document processing & structured extraction
 
 An ingestion pipeline for customer contracts and invoices to automatically extract key information, complete with confidence scoring on the output. It displays source references from the origin document and returns JSON validated against a Pydantic schema. A 4B model is more than capable of handling this workload.
 
-##### GDPR-Compliant anonymization pipeline
+#### GDPR-Compliant anonymization pipeline
 
 To safely process client contracts and invoices, the model detects and replaces personal data (PII) within documents. This anonymization process enables building a *golden dataset* for evaluation and fine-tuning, all while remaining fully RGPD compliant with stored data.
 
-##### Documentation RAG
+#### Documentation RAG
 
 High precision search across a large document corpus. As I am preparing for the Google Cloud Professional Architect certification, the goal is to ingest all my course materials to enable fast and accurate retrieval. Embedding genetation and reranking are handled locally.
 
-##### Local/API router with savings monitoring
+#### Local/API router with savings monitoring
 
 The local model evaluates incoming queries to determine iwhether an expensive API call is warranted, while tracking the money saved in the process.
 
-#### Hybrid local/cloud project
+### Hybrid local/cloud project
 
-##### Autonomous 24/7 Youtube Radio
+#### Autonomous 24/7 Youtube Radio
 
 Building a fully automated Youtube channel. A cloud-based model generates music for six hours each night via API. Once generated, the tracks are fed into a locally looped playlist to maintain a continuous 24/7 Youtube live stream using FFmpeg, RTMP and Intel Quick Sync.

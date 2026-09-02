@@ -76,26 +76,26 @@ Ollama (moteur local) · **Open WebUI** (interface chat + vocal) · embeddings B
 
 ## Catalogue de projets
 
-#### Premiers usages locaux
+### Premiers usages locaux
 
-##### Lecture et extraction structurée
+#### Lecture et extraction structurée
 
 Projet d'ingestion de factures/contrats clients etc. afin d'en extraire automatiquement les informations importantes (..) avec évaluation de confiance du résultat extrait. Affichage de la source dans le document. Format JSON validé par un schéma Pydantic. Un modèle 4B est suffisamment puissant et doué pour réaliser ce type de tâche.
 
-##### Passerelle d'anonymisation RGPD
+#### Passerelle d'anonymisation RGPD
 
 Dans un soucis de lecture de factures/contrats clients, le modèle détecte et remplace les données personnelles d'un document. Cette anonymisation permettra d'alimenter un *golden set* pour entraîner le modèle et d'être RGPD friendly.
 
-##### RAG sur de la documentation
+#### RAG sur de la documentation
 
 Recherche précise dans un ensemble de documents. Voulant passer la certification Professional Cloud Architect de Google, l'idée serait de faire ingérer tous les documents de cours et de pouvoir y faire de la recherche rapide et précise. Enbeffing et reranking en local.
 
-##### Router local/API avec mesure d'économies
+#### Router local/API avec mesure d'économies
 
 Le modèle local évalue chque requête et décide si elle mérite un appel payant. Permet de mesurer les euros économisés.
 
-#### Projet "mixte" local et API
+### Projet "mixte" local et API
 
-##### Radio Youtube 24/7 auto-alimentée
+#### Radio Youtube 24/7 auto-alimentée
 
 Création d'une chaîne Youtube 100% automatisée. Un modèle viendra créer des musiques pendant 6h la nuit *(via API)*. A l'issu de ces créations, une playlist est alimentée et bouclée *(en local)* afin de continuellement la faire tourner en live sur Youtube (FFmpeg RTMP + Quick Sync).

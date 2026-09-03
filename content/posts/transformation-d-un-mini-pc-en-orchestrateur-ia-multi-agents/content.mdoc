@@ -1,8 +1,12 @@
+Peut-on faire tourner une pile d'agents IA, du RAG et de l'automatisation chez soi sans GPU dédié ni abonnement Saas ? **Oui.**
+
 Après avoir multiplié les abonnements SaaS, les tests et les résiliations, le moment était venu de passer à la pratique. Réduire ma dépendance aux services tiers devenait une priorité, et mon intérêt pour l'expérimentation technique m'a naturellement conduit à acquérir un premier serveur dédié.
+
+En combinant un mini-PC de 35W (*Lenovo M70q*), des modèles légers quantifiés en Q4 et un orchestrateur hybride, il est possible de déployer un laboratoire 100 % souverain capable d'extraire des données contractuelles, d'anonymiser des flux RGPD et de streamer en continu, avec une latence de 15 à 20 tok/s.
 
 **Objectif**
 
-Concevoir une infrastructure IA locale, souveraine et capable d'accueillir l'ensemble de mes futurs projets.
+Bâtir une infrastructure locale, souveraine, reproductible via du code (IaC) et prête à accueillir mes futurs projets.
 
 ## La pièce maitresse du laboratoire
 
@@ -29,16 +33,15 @@ Serveur : *Lenovo ThinkCenter M70Q*
 
 Cette configuration locale ne permet pas encore d'itérer ou d'attendre des réponses longues de la part des agents. Les premières réponses attendues seront des sorties courtes (JSON, label, scores).
 
-\
-Dans ce cas, j'utiliserai de petits modèles de 3-4B (3 à 4 milliards de paramètres) compressés en Q4 (poids réduits à 4 bits, 4× plus légers) et un contexte volontairement réduit, pour un débit attendu de 15-20 tok/s sans faire exploser la mémoire :
+#### Le parti-pris des modèles : petits, quantifiés et spécialisés
 
-- *qwen3.5:4b* : principal
-- *gemma4:e4b/phi4-mini* : alternatives a tester
-- *bge-m3* : embedding
+Sans carte graphique dédiée (dGPU), vouloir faire tourner du 70B en local est une illusion. La stratégie repose sur des modèles ultra-spécialisés :
 
-Néanmoins, beaucoup de projets sont envisageables, à leur échelle, limitée par la machine.
+- **Modèles principaux (3-4B en Q4**) **:** `qwen3.5:4b`, `phi-4-mini` ou `gemma` pour l'extraction structurée et la classification (15-20 tok/s attendus).
+- **Embeddings & Rerank** **:** `bge-m3` pour le RAG local.
+- **Format des sorties :** Des payloads courts, typés et validés par schéma Pydantic.
 
-## Les OS
+## L'architecture système
 
 {% table %}
 ---
@@ -63,40 +66,52 @@ Le choix de passer par Proxmox se justifie grâce aux différentes fonctionnalit
 
 ## La stack
 
-*Socle*\
-Docker + Compose · Caddy (TLS via DNS-01) · Tailscale (zéro port ouvert) · Gitea + runner · Terraform (provider `bpg/proxmox`) · Ansible
+*Socle & réseau*\
+Docker Compose · Caddy (TLS automatique via challenge DNS-01) · Tailscale (mesh VPN, aucun port ouvert sur la box) · Gitea + Runner · Ansible.
 
-*Données*\
-PostgreSQL + pgvector · Redis · MinIO (S3 local, mêmes SDK que le cloud) · DuckDB
+*Stockage & données*\
+PostgreSQL avec extension `pgvector` · Redis (cache) · MinIO (stockage objet compatible S3) · DuckDB (analyses rapides).
 
-*Observabilité*\
-Langfuse (traces, coûts et latence des appels LLM)
+*Moteurs IA & interface*\
+Ollama · Open WebUI (chat/voix) · faster-whisper (STT) · Piper (TTS).
 
-*IA*\
-Ollama (moteur local) · Open WebUI (interface chat + vocal) · embeddings BGE-M3 · reranker · faster-whisper (transcription) · Piper (synthèse vocale) · n8n (déclencheurs et plomberie) · LangGraph ou Pydantic AI (agents codés)
+*Plomberie & observabilité*\
+n8n pour les déclencheurs événementiels · LangGraph / Pydantic AI pour les agents de code · Langfuse pour mesurer la latence, les tokens et les coûts des fallbacks API.
 
 ## Catalogue de projets
 
 ### Premiers usages locaux
 
-#### Lecture et extraction structurée
+#### *Lecture et extraction structurée*
 
 Projet d'ingestion de factures/contrats clients etc. afin d'en extraire automatiquement les informations importantes (..) avec évaluation de confiance du résultat extrait. Affichage de la source dans le document. Format JSON validé par un schéma Pydantic. Un modèle 4B est suffisamment puissant et doué pour réaliser ce type de tâche.
 
-#### Passerelle d'anonymisation RGPD
+#### *Passerelle d'anonymisation RGPD*
 
 Dans un soucis de lecture de factures/contrats clients, le modèle détecte et remplace les données personnelles d'un document. Cette anonymisation permettra d'alimenter un *golden set* pour entraîner le modèle et d'être RGPD friendly.
 
-#### RAG sur de la documentation
+#### *RAG sur de la documentation*
 
 Recherche précise dans un ensemble de documents. Voulant passer la certification Professional Cloud Architect de Google, l'idée serait de faire ingérer tous les documents de cours et de pouvoir y faire de la recherche rapide et précise. Enbeffing et reranking en local.
 
-#### Router local/API avec mesure d'économies
+#### *Router local/API avec mesure d'économies*
 
 Le modèle local évalue chque requête et décide si elle mérite un appel payant. Permet de mesurer les euros économisés.
 
 ### Projet "mixte" local et API
 
-#### Radio Youtube 24/7 auto-alimentée
+#### *Radio Youtube 24/7 auto-alimentée*
 
 Création d'une chaîne Youtube 100% automatisée. Un modèle viendra créer des musiques pendant 6h la nuit *(via API)*. A l'issu de ces créations, une playlist est alimentée et bouclée *(en local)* afin de continuellement la faire tourner en live sur Youtube (FFmpeg RTMP + Quick Sync).
+
+---
+
+Ce premier article pose les fondations et la vision d'ensemble. Faire cohabiter autant de briques (Proxmox, Tailscale, pgvector, Ollama, agents) sur une seule machine de 35 W demande des ajustements fins, tant sur l'infrastructure que sur le code.
+
+Pour documenter ces choix et partager les configurations prêtes à l'emploi, je détaillerai chaque composant dans des articles dédiés.
+
+#### Reprendre le contrôle de son IA
+
+Le passage au local n'est pas qu'une question de réduction de coûts face aux abonnements SaaS récurrents. C'est avant tout une reprise de contrôle : **sur ses données, sur la reproductibilité de ses outils et sur la compréhension de la stack technique.**
+
+Avec ma nouvelle petite machine, un budget maîtrisé et des modèles open-source légers mais bien cadrés, l'auto-hébergement d'une IA utile et productive n'est plus réservé aux datacenters. Le laboratoire est en place, les premières métriques sont au vert, et la suite consistera à pousser ces petits modèles dans leurs derniers retranchements.

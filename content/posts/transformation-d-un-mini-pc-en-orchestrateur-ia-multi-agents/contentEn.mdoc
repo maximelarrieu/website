@@ -1,8 +1,12 @@
-After juggling countless SaaS subscriptions, trials, and cancellations, it was time to take a hands-on approach. Reducing reliance on third-party services had become a priority, and my drive for technical experimentation naturally led me to acquire my first dedicated server.
+Can we run an AI agent stack, local RAG, and end-to-end automation at home without a dedicated GPU or Saas subscriptions? **Yes.**
+
+After juggling Saas tiers, tiral runs, and inevitable cancellations, the time had come to take matters into my own hands. Cutting back on third-party dependencies became a priority, and my drive to experiment hands-on naturally led me to acquire my first dedicated server.
+
+By pairing a 35W mini PC (*Lenovo M70q*) with lightweight Q4-quantized models and a hybrid orchestrator, you can deploy a fully sovereign home lab. It handles contract data extraction, GDPR-compliant PII redaction, and 24/7 Youtube radio streaming. All while sustaining a steady 15-20 tok/s throughput.
 
 **The objective**
 
-Design a local, sovereign AI infrastructure capable of supporting all my upcoming projects.
+Build a local, sovereign infrastructure reproductible via IaC and primed for future projects.
 
 ## The lab mastery hardware
 
@@ -29,14 +33,13 @@ Design a local, sovereign AI infrastructure capable of supporting all my upcomin
 
 This local setup doesn't allow for conversations with agents or complex tasks. The initial response attempts will be shorted (JSON, label, scores).
 
-\
-In this case, I will use small 3–4B models (3 to 4 billion parameters) quantized to Q4 (weights reduced to 4 bits, making them 4× lighter) with an intentionally reduced context window, aiming for an expected throughput of 15–20 tok/s without blowing up memory usage:
+#### The model strategy : Small, quantized and specialized
 
-- qwen3.5:4b : main
-- *gemma4:e4b/phi4-mini* : to be tested
-- *bge-m3* : embeddings
+Without a dedicated GPU (dGPU), running 70B models locally is a non-starter. Instead, the strategy centers on ultra-specialized, lightweight models :
 
-That being said, the agents will carry out specifics actions, short iterations and precise tasks.
+- **Primary models (3-4B en Q4**) **:** `qwen3.5:4b`, `phi-4-mini` or `gemma` for structured extraction and classification (targeting 15-20tok/s).
+- **Embeddings & Rerank** **:** `bge-m3` for local TAG retrieval.
+- **Format des sorties :** Short, strictly typed payload validated against Pydantic schemas.
 
 ## OS used
 
@@ -62,44 +65,52 @@ The choice of Proxmox is justified by several key features: it enables instant s
 
 ## The stack
 
-***Foundations***
+*Core & networking*\
+Docker Compose · Caddy (automated TLS via DNS-01 challenge) · Tailscale (mesh VPN, zero open port) · Gitea + Runner · Ansible.
 
-Docker + Compose · Caddy (TLS via DNS-01) · Tailscale (0 open port) · Gitea + runner · Terraform (provider `bpg/proxmox`) · Ansible
+*Storage & data*\
+PostgreSQL with the `pgvector` extension · Redis (caching) · MinIO (S3-compatible object storage) · DuckDB (fast in-process analytics).
 
-***Data***
+*AI Engines & interfaces*\
+Ollama · Open WebUI (chat/voice UI) · faster-whisper (STT) · Piper (TTS).
 
-PostgreSQL + **pgvector** · Redis · MinIO (local S3, same SDK in cloud) · DuckDB
-
-***Monitoring***
-
-Langfuse (trace, cost, LLM call latency)
-
-***AI***
-
-Ollama (local engine) · **Open WebUI** (chat + voice interface) · BGE-M3 (embeddings) · reranker · **faster-whisper** (transcription) · **Piper** (voice synthesis/TTS) · **n8n** (triggers and plumbing) · **LangGraph** ou **Pydantic AI** (code-first agents)
+*Plumbing & observability*\
+n8n for event-driven triggers · LangGraph / Pydantic AI for programmatic code-first agents · Langfuse to track latency, token usage and API fallback costs.
 
 ## Project catalog
 
 ### Initial local use cases
 
-#### Document processing & structured extraction
+#### *Document processing & structured extraction*
 
 An ingestion pipeline for customer contracts and invoices to automatically extract key information, complete with confidence scoring on the output. It displays source references from the origin document and returns JSON validated against a Pydantic schema. A 4B model is more than capable of handling this workload.
 
-#### GDPR-Compliant anonymization pipeline
+#### *GDPR-Compliant anonymization pipeline*
 
 To safely process client contracts and invoices, the model detects and replaces personal data (PII) within documents. This anonymization process enables building a *golden dataset* for evaluation and fine-tuning, all while remaining fully RGPD compliant with stored data.
 
-#### Documentation RAG
+#### *Documentation RAG*
 
 High precision search across a large document corpus. As I am preparing for the Google Cloud Professional Architect certification, the goal is to ingest all my course materials to enable fast and accurate retrieval. Embedding genetation and reranking are handled locally.
 
-#### Local/API router with savings monitoring
+#### *Local/API router with savings monitoring*
 
 The local model evaluates incoming queries to determine iwhether an expensive API call is warranted, while tracking the money saved in the process.
 
 ### Hybrid local/cloud project
 
-#### Autonomous 24/7 Youtube Radio
+#### *Autonomous 24/7 Youtube Radio*
 
 Building a fully automated Youtube channel. A cloud-based model generates music for six hours each night via API. Once generated, the tracks are fed into a locally looped playlist to maintain a continuous 24/7 Youtube live stream using FFmpeg, RTMP and Intel Quick Sync.
+
+---
+
+This initial article lays the groundwork and overall vision. Running so many moving parts (Proxmox, Tailscale, pgvector, Ollama, agents) on a single 35W machine requires careful fine-tuning, both acress the infrastructure and within the code.
+
+To document these design choices and share production-ready configurations, I will break down each component in dedicated follow-up posts.
+
+#### Taking back control on your AI
+
+Going local is about more than just cutting down on recurring SaaS subscriptions. Above all, it is about reclaiming control-over your data, **over the reproducibility of your tooling, and over your understanding of the underlying stack**.
+
+Armed with this compact machine, a controlled budget, and lightweight yet well-scoped open-source models, self-hosting a practical, productive AI environments is no longer reserved for hyperscale data centers. The lab is up and running, initial metrics look solid, and the next step is to push these small models to their limits.

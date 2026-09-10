@@ -2,7 +2,7 @@ Peut-on faire tourner une pile d'agents IA, du RAG et de l'automatisation chez s
 
 Après avoir multiplié les abonnements SaaS, les tests et les résiliations, le moment était venu de passer à la pratique. Réduire ma dépendance aux services tiers devenait une priorité, et mon intérêt pour l'expérimentation technique m'a naturellement conduit à acquérir un premier serveur dédié.
 
-En combinant un mini-PC de 35W (*Lenovo M70q*), des modèles légers quantifiés en Q4 et un orchestrateur hybride, il est possible de déployer un laboratoire 100 % souverain capable d'extraire des données contractuelles, d'anonymiser des flux RGPD et de streamer en continu, avec une latence de 15 à 20 tok/s.
+En combinant un mini-PC de 35W (*Lenovo M70q*), des modèles légers quantifiés en Q4 et un orchestrateur hybride, il est possible de déployer un laboratoire 100 % souverain capable d'extraire des données contractuelles, d'anonymiser des flux RGPD et de streamer en continu, avec une latence de 7 à 11 tok/s.
 
 **Objectif**
 
@@ -37,7 +37,7 @@ Cette configuration locale ne permet pas encore d'itérer ou d'attendre des rép
 
 Sans carte graphique dédiée (dGPU), vouloir faire tourner du 70B en local est une illusion. La stratégie repose sur des modèles ultra-spécialisés :
 
-- **Modèles principaux (3-4B en Q4**) **:** `qwen3.5:4b`, `phi-4-mini` ou `gemma` pour l'extraction structurée et la classification (15-20 tok/s attendus).
+- **Modèles principaux (3-4B en Q4**) **:** `qwen3.5:4b`, `phi-4-mini` ou `gemma` pour l'extraction structurée et la classification (7-11 tok/s attendus).
 - **Embeddings & Rerank** **:** `bge-m3` pour le RAG local.
 - **Format des sorties :** Des payloads courts, typés et validés par schéma Pydantic.
 

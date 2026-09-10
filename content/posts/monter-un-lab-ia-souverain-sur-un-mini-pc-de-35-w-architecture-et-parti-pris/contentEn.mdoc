@@ -2,7 +2,7 @@ Can we run an AI agent stack, local RAG, and end-to-end automation at home witho
 
 After juggling Saas tiers, tiral runs, and inevitable cancellations, the time had come to take matters into my own hands. Cutting back on third-party dependencies became a priority, and my drive to experiment hands-on naturally led me to acquire my first dedicated server.
 
-By pairing a 35W mini PC (*Lenovo M70q*) with lightweight Q4-quantized models and a hybrid orchestrator, you can deploy a fully sovereign home lab. It handles contract data extraction, GDPR-compliant PII redaction, and 24/7 Youtube radio streaming. All while sustaining a steady 15-20 tok/s throughput.
+By pairing a 35W mini PC (*Lenovo M70q*) with lightweight Q4-quantized models and a hybrid orchestrator, you can deploy a fully sovereign home lab. It handles contract data extraction, GDPR-compliant PII redaction, and 24/7 Youtube radio streaming. All while sustaining a steady 7-11 tok/s throughput.
 
 **The objective**
 
@@ -37,7 +37,7 @@ This local setup doesn't allow for conversations with agents or complex tasks. T
 
 Without a dedicated GPU (dGPU), running 70B models locally is a non-starter. Instead, the strategy centers on ultra-specialized, lightweight models :
 
-- **Primary models (3-4B en Q4**) **:** `qwen3.5:4b`, `phi-4-mini` or `gemma` for structured extraction and classification (targeting 15-20tok/s).
+- **Primary models (3-4B en Q4**) **:** `qwen3.5:4b`, `phi-4-mini` or `gemma` for structured extraction and classification (targeting 7-11 tok/s).
 - **Embeddings & Rerank** **:** `bge-m3` for local TAG retrieval.
 - **Format des sorties :** Short, strictly typed payload validated against Pydantic schemas.
 

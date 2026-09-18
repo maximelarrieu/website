@@ -1,0 +1,93 @@
+Linux m'a toujours rendu curieux. Moins pour le système lui-même que pour tout ce qu'on peut y installer : les outils, les paquets, tout cet écosystème open source qu'on découvre au fil des besoins.\
+Le problème, c'est que je changeais d'OS tous les quatre matins, avec le plaisir un peu masochiste de repartir de zéro. Et donc de retélécharger, reconfigurer, réinstaller. Chaque fois.
+
+Ce qui me manquait n'était pas un outil de plus, c'était la **portabilité** de l'ensemble. Une stack qui me suit, identique, d'une machine à l'autre.
+
+Cet article liste les outils que j'ai retenus, mais surtout la logique qui les relie : un poste de travail conçu pour piloter plusieurs agents en parallèle, reproductible par un seul script, versionné comme du code.
+
+## Le socle : terminal et système
+
+Tout le reste vit à l'intérieur de cette couche, donc autant la choisir avec soin.
+
+- **Un terminal moderne** : *Ghostty* (rapides, GPU-accelerated), avec **zsh + starship** pour le prompt
+- **Multiplexeur** : *zellij*, indispensable quand tu lances des agents qui tournent longtemps, tu détaches la session et tu reviens plus tard (possibilité d'avoir des pane flottantes à pin ou pas sur le terminal)
+- **Outils CLI modernes** : *lazygit* très bonne récente découverte, un suivi git léger ça fait du bien, puis d'autres (*fd, fzf, bat, eza, zoxide, jq/yq,xh, delta* (diffs git lisibles), *atuin* pour l'historique shell remplacé par une base SQLite.
+- **Gestion de versions de langages** : **mise** (successeur d'asdf) un seul outil pour Node, Python, Go, Terraform, etc.
+- **uv** pour Python (remplace pip/venv/poetry, ultra rapide) et **bun** côté JS
+
+### Les outils CLI du quotidien
+
+Ce sont des remplacements directs de commandes historiques, en plus rapides et plus lisibles :
+
+- **fd** (recherche de fichiers), **fzf** (sélection floue, qui se branche sur tout), **bat** (cat avec coloration syntaxique), **eza** (ls modernisé), **zoxide** (cd qui apprend les répertoires fréquents)
+- **jq** et **yq** pour manipuler du JSON et du YAML, **xh** pour les requêtes HTTP rapides
+- **delta** pour rendre les diffs git réellement lisibles
+- **lazygit**, découverte plus récente : une interface terminal pour git qui rend le suivi quotidien beaucoup plus léger — staging par lignes, navigation dans l'historique, gestion des branches
+- **tealdeer**, une implémentation rapide de tldr : des pages de manuel condensées en trois exemples utiles, ce qui est souvent tout ce qu'on cherche
+- **btop** pour le monitoring système, et **dust** et **duf** pour l'usage disque
+
+Le parti-pris de cette section : rester en ligne de commande. Pas d'interfaces parasites, juste l'essentiel et le contrôle de ce qui se passe. Et ça fait toujours son effet ! (on s'y habitue vite, promis!).
+
+## Les agents de coding CLI
+
+On a tous nos habitudes, mais l'intérêt est justement de les faire cohabiter et de choisir selon le projet ou la tâche.
+
+- **Claude Code** : mon principal outil de développement. C'est celui que j'utilise pour le travail de fond en terminal : refactorisations multi-fichiers, navigation dans une base de code entière. Le système de skills, de hooks et de sous-agents permet de le spécialiser par projet.
+- **Gemini CLI** : mon complément quotidien. Généreux en usage gratuit, et cohérent avec mon orientation GCP.
+- **Google Antigravity** : l'IDE agentique multi-agents de Google. Ses agents managés peuvent piloter un navigateur : ouvrir des pages, lire de la documentation, interagir avec des interfaces web. Sa CLI, **agy**, permet de rester en terminal.
+- **Aider** : plus léger, très bon pour des edits git-natifs ciblés.
+
+La vision : pas un outil unique, mais une pile orchestrée où le développeur devient orchestrateur. Concrètement, des **git worktrees** combinés à zellij, un agent par worktree, sur des tâches différentes, sans qu'ils se marchent sur les pieds. C'est là que le multiplexeur prend tout son sens.
+
+## Orchestration d'agents et MCP
+
+Pour connecter ces agents au reste du monde.
+
+- **Serveurs MCP** : filesystem, GitHub, Postgres, Playwright/Puppeteer (automatisation navigateur), et les MCP des services que j'utilise (Notion, Atlassian…). C'est le standard pour connecter les agents à tout.
+- **n8n** : self-hosted, l'outil le plus efficace pour de l'automatisation IA : workflows visuels + nodes IA.
+- **LangGraph** ou **Google ADK** (Agent Development Kit) pour coder des agents custom / ADK est aligné avec mon orientation GCP/Vertex AI.
+- **Ollama** : pour faire tourner des modèles locaux (tests, données sensibles clients, démos offline).
+
+Le but est de pouvoir tout personnalisé, tout configuré et interconnecté : n8n déclenche et relie, LangGraph et ADK raisonnent. Les deux ne se remplacent pas.
+
+## Cloud et architecture (orienté GCP)
+
+Cette section n'est pas obligatoire, malgré que certains outils pourrait servir à beaucoup, ici l'enjeu est d'avoir tous les outils nécessaire pour aussi gérer de l'architecture GCP :
+
+- **gcloud CLI** *for sure*, + gsutil, bq
+- **Terraform** : incontournable pour du Cloud Architect, et c'est LE terrain où les agents IA brillent (génération de modules, review de plans)
+- **Docker + Docker Compose**, et **k3s** ou **kind** en local pour pratiquer Kubernetes/GKE sans payer
+- **Infracost** : estimation de coûts sur les plans Terraform
+- **trivy :** scan sécurité images/IaC
+- **Steampipe** : requêter ton infra cloud en SQL, sous-coté pour l'audit d'archi
+
+Ces outils permettront de concevoir des architectures déployables, tout en gardant la maîtrise des coûts et des risques de sécurité **avant** le déploiement, pas après.
+
+## Qualité, contexte et hygiène
+
+Il est important de suivre un cadrage rigoureux, cela crée les bonnes habitudes et débloque des automatismes. On évitera ainsi les dégâts en mettant en place aussi des garde-fous.
+
+- **direnv** + **sops/age** pour les secrets par projet (pas de clés API en clair dans les configs d'agents)
+- Un fichier de contexte par projet (CLAUDE.md, GEMINI.md, AGENTS.md)
+- **pre-commit** + linters (ruff, eslint/biome) : les agents produisent vite, il faut des garde-fous automatiques
+- **GitHub CLI (*****gh*****)** : les agents s'en servent pour créer des PR, lire des issues, etc.
+- **promptfoo** pour évaluer les prompts. On teste son code, il n'y a aucune raison de ne pas tester ses prompts : promptfoo permet de définir des cas de test, de comparer plusieurs modèles ou formulations, et de détecter une régression quand on modifie un prompt.
+- **hurl** ou **Bruno** pour tester les API REST de mes automatisations. Leur intérêt par rapport à Postman : les requêtes sont des fichiers texte, donc versionnables et exécutables en CI
+
+Pour s'assurer d'avoir la même base, les mêmes garde-fous et les mêmes conventions dans tous les projets.
+
+### Déploiement de la stack
+
+Je maintiens un **script d'installation** qui déploie l'ensemble des composants, et j'utilise **chezmoi** pour gérer les fichiers de configuration. Chezmoi versionne les dotfiles dans un dépôt git, gère les différences entre machines via des templates, et sait injecter des secrets depuis un gestionnaire dédié. Une nouvelle machine, c'est donc : installer chezmoi, pointer vers le dépôt, lancer le script.
+
+Et tout ceci fonctionne aussi bien sous WSL sur Windows, ce qui rend la stack utilisable même quand le poste n'est pas sous Linux. Une précision utile dans ce cas : le disque virtuel WSL a une taille plafonnée, et c'est justement là que dust et duf servent à surveiller ce qui grossit.
+
+## Conclusion
+
+J'utilise cette stack depuis un mois. Je suis loin d'en exploiter tout le potentiel : ça représente beaucoup de nouvelles commandes à assimiler, et je me construis d'ailleurs une cheatsheet au fil de l'usage pour les intégrer progressivement.
+
+Deux machines partagent aujourd'hui la même configuration. Quand elle évolue sur l'une, la répercuter sur l'autre prend quelques secondes et c'était tout l'objectif de départ.
+
+Ce qui m'a le plus surpris, c'est zellij. Je le voyais comme un confort, c'est devenu structurant : des layouts par type de projet, et avec lazygit, le terminal suffit à suivre l'avancement sans jamais ouvrir autre chose.
+
+Et vous, qu'est-ce qui compose votre stack ? Quel outil vous a fait gagner le plus de temps ?

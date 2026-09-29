@@ -1,0 +1,19 @@
+.gcloudignore
+.git
+.gitignore
+
+# Dependencies (Cloud Build runs npm install)
+node_modules/
+
+# Local build artifacts (Cloud Build executes npm run build)
+dist/
+
+# Large files and archives
+*.zip
+elite-fullstack-portfolio.zip
+oauth_debug.log
+
+# Local environment files (Cloud Run uses environment variables set on the service)
+.env
+.env.local
+.env.*.local

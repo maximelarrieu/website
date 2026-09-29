@@ -1,24 +1,34 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Send, Bot, Loader2, Sparkles, MessageCircle } from 'lucide-react';
+import { X, Send, Loader2, Sparkles, MessageCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getChatResponse } from '../services/geminiService';
 import { ChatMessage } from '../types';
-
-const QUICK_PROMPTS = [
-  "Tell me about the EDF project",
-  "Preferred tech stack?",
-  "Blockchain expertise?",
-  "Availability?"
-];
+import { useLanguage } from './LanguageContext';
 
 export const AIChat: React.FC = () => {
+  const { t, language } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    { role: 'model', text: "Hello. I am Maximus. How can I enlighten you on his industrial expertise or technical achievements?", timestamp: Date.now() }
-  ]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const QUICK_PROMPTS = language === 'en' ? [
+    "What are your projects?",
+    "What technologies do you like?",
+    "What is your availability?"
+  ] : [
+    "Quels sont tes projets ?",
+    "Qu’aimes-tu comme technologies ?",
+    "Quelles sont tes disponibilités ?"
+  ];
+
+  // Reset messages when language changes to match greeting language
+  useEffect(() => {
+    setMessages([
+      { role: 'model', text: t('chat.greetings'), timestamp: Date.now() }
+    ]);
+  }, [language]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -38,7 +48,8 @@ export const AIChat: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const responseText = await getChatResponse(messageToSend);
+      const historyItems = messages.map(m => ({ role: m.role, text: m.text }));
+      const responseText = await getChatResponse(messageToSend, language, historyItems);
       setMessages(prev => [...prev, { role: 'model', text: responseText, timestamp: Date.now() }]);
     } finally {
       setIsLoading(false);
@@ -50,43 +61,43 @@ export const AIChat: React.FC = () => {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.95, transformOrigin: 'bottom right' }}
+            initial={{ opacity: 0, y: 15, scale: 0.95, transformOrigin: 'bottom right' }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="fixed bottom-24 right-6 w-[90vw] md:w-[400px] h-[600px] bg-slate-900/95 backdrop-blur-2xl border border-slate-700/50 rounded-3xl shadow-2xl flex flex-col z-50 overflow-hidden ring-1 ring-white/10"
+            exit={{ opacity: 0, y: 15, scale: 0.95 }}
+            className="fixed bottom-24 right-6 w-[90vw] md:w-[380px] h-[540px] bg-white border border-brand-200/80 rounded-2xl shadow-xl flex flex-col z-50 overflow-hidden"
           >
             {/* Header */}
-            <div className="p-5 border-b border-white/5 bg-gradient-to-r from-indigo-600/20 to-transparent flex justify-between items-center">
+            <div className="p-4 border-b border-brand-200/60 bg-brand-100 flex justify-between items-center">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-indigo-500 rounded-xl shadow-lg shadow-indigo-500/20">
-                  <Sparkles className="w-5 h-5 text-white" />
+                <div className="p-2 bg-accent-soft rounded-lg text-white">
+                  <Sparkles className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-white tracking-tight">Maximus</h3>
+                  <h3 className="text-sm font-bold text-brand-900 tracking-tight">{t('chat.title')}</h3>
                   <div className="flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-                    <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Online</p>
+                    <p className="text-[10px] uppercase tracking-wider text-brand-500 font-bold">{t('chat.status')}</p>
                   </div>
                 </div>
               </div>
-              <button onClick={() => setIsOpen(false)} className="p-2 hover:bg-white/5 rounded-full transition-colors text-slate-400">
-                <X className="w-5 h-5" />
+              <button onClick={() => setIsOpen(false)} className="p-1.5 hover:bg-brand-200/50 rounded-full transition-colors text-brand-500 hover:text-brand-900">
+                <X className="w-4 h-4" />
               </button>
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-hide">
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-hide bg-brand-50/50">
               {messages.map((msg, idx) => (
                 <motion.div 
-                  initial={{ opacity: 0, x: msg.role === 'user' ? 10 : -10 }}
-                  animate={{ opacity: 1, x: 0 }}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
                   key={idx} 
                   className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
-                  <div className={`max-w-[85%] p-4 rounded-2xl text-sm leading-relaxed ${
+                  <div className={`max-w-[85%] p-3 px-4 rounded-xl text-sm leading-relaxed shadow-sm ${
                       msg.role === 'user' 
-                        ? 'bg-indigo-600 text-white rounded-br-none shadow-lg shadow-indigo-600/20' 
-                        : 'bg-slate-800/80 text-slate-200 border border-white/5 rounded-bl-none'
+                        ? 'bg-accent-soft text-white rounded-br-none' 
+                        : 'bg-white text-brand-900 border border-brand-200/60 rounded-bl-none'
                     }`}>
                     {msg.text}
                   </div>
@@ -94,9 +105,9 @@ export const AIChat: React.FC = () => {
               ))}
               {isLoading && (
                 <div className="flex justify-start">
-                  <div className="bg-slate-800/50 p-4 rounded-2xl rounded-bl-none border border-white/5 flex items-center gap-3">
-                    <Loader2 className="w-4 h-4 text-indigo-400 animate-spin" />
-                    <span className="text-xs text-slate-400 font-medium">Analyzing...</span>
+                  <div className="bg-white p-3 px-4 rounded-xl rounded-bl-none border border-brand-200/60 flex items-center gap-2.5 shadow-sm">
+                    <Loader2 className="w-3.5 h-3.5 text-accent-soft animate-spin" />
+                    <span className="text-xs text-brand-500">{t('chat.thinking')}</span>
                   </div>
                 </div>
               )}
@@ -104,12 +115,12 @@ export const AIChat: React.FC = () => {
             </div>
 
             {/* Quick Prompts */}
-            <div className="px-6 py-2 flex gap-2 overflow-x-auto scrollbar-hide">
+            <div className="px-4 py-2 flex gap-1.5 overflow-x-auto scrollbar-hide bg-white border-t border-brand-100">
               {QUICK_PROMPTS.map((prompt) => (
                 <button
                   key={prompt}
                   onClick={() => handleSend(prompt)}
-                  className="whitespace-nowrap px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-[11px] text-slate-300 transition-all"
+                  className="whitespace-nowrap px-3 py-1.5 bg-brand-100 hover:bg-brand-200/50 border border-brand-200 rounded-full text-[10px] text-brand-500 font-medium transition-all"
                 >
                   {prompt}
                 </button>
@@ -117,22 +128,22 @@ export const AIChat: React.FC = () => {
             </div>
 
             {/* Input */}
-            <div className="p-6 border-t border-white/5 bg-slate-950/50">
-              <div className="flex items-center gap-3">
+            <div className="p-4 border-t border-brand-200/60 bg-white">
+              <div className="flex items-center gap-2">
                 <input
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSend('')}
-                  placeholder="Ask a technical question..."
-                  className="flex-1 bg-white/5 border border-white/10 rounded-2xl px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all placeholder:text-slate-600 text-white"
+                  placeholder={t('chat.placeholder')}
+                  className="flex-1 bg-brand-50 border border-brand-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-accent-soft focus:border-accent-soft transition-all placeholder:text-brand-500 text-brand-900"
                 />
                 <button 
                   onClick={() => handleSend('')}
                   disabled={isLoading || !input.trim()}
-                  className="p-3.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 rounded-2xl transition-all text-white shadow-lg shadow-indigo-600/30"
+                  className="p-2.5 bg-accent-soft hover:bg-accent-hover disabled:opacity-50 rounded-xl transition-all text-white shadow-sm flex-shrink-0"
                 >
-                  <Send className="w-5 h-5" />
+                  <Send className="w-4 h-4" />
                 </button>
               </div>
             </div>
@@ -144,9 +155,9 @@ export const AIChat: React.FC = () => {
         onClick={() => setIsOpen(!isOpen)}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        className="fixed bottom-8 right-8 w-16 h-16 bg-indigo-600 text-white rounded-full shadow-2xl shadow-indigo-500/40 z-50 flex items-center justify-center transition-colors ring-4 ring-indigo-500/20"
+        className="fixed bottom-8 right-8 w-14 h-14 bg-accent-soft text-white rounded-full shadow-lg shadow-accent-soft/20 z-50 flex items-center justify-center transition-colors ring-4 ring-accent-soft/15"
       >
-        {isOpen ? <X className="w-7 h-7" /> : <MessageCircle className="w-7 h-7" />}
+        {isOpen ? <X className="w-6 h-6" /> : <MessageCircle className="w-6 h-6" />}
       </motion.button>
     </>
   );

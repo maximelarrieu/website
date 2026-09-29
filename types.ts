@@ -26,10 +26,15 @@ export interface ChatMessage {
 export interface BlogPost {
   id: string;
   title: string;
+  titleEn?: string;
   date: string;
-  category: 'Cloud Architecture' | 'Vertex AI' | 'Fullstack' | 'DevOps';
+  category: 'Cloud Architecture' | 'Vertex AI' | 'Fullstack' | 'DevOps' | string;
+  categoryEn?: string;
   excerpt: string;
+  excerptEn?: string;
   content: string;
+  contentEn?: string;
   readTime: string;
+  readTimeEn?: string;
   imageUrl: string;
 }

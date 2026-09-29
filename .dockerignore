@@ -1,0 +1,20 @@
+.dockerignore
+.gcloudignore
+.git
+.gitignore
+
+# Dependencies
+node_modules/
+
+# Local build artifacts
+dist/
+
+# Large files and archives
+*.zip
+elite-fullstack-portfolio.zip
+oauth_debug.log
+
+# Local environment files
+.env
+.env.local
+.env.*.local

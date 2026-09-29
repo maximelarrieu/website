@@ -1,5 +1,6 @@
 {
   "name": "Elite Fullstack Portfolio",
-  "description": "A premium, high-impact portfolio for a senior fullstack developer working with top-tier industrial clients like EDF and CMA-CGM, featuring an AI-powered interactive assistant.",
-  "requestFramePermissions": []
+  "description": "Un portfolio personnel, doux et authentique, décrivant le parcours d’apprentissage, de développement et d’expérimentation de Maxime Larrieu.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

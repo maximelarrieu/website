@@ -1,9 +1,30 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="fr" class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Fullstack Engineer Portfolio - Maxime Larrieu-Panini</title>
+    <title>Maxime Larrieu-Panini | Développeur Fullstack & Consultant Cloud</title>
+    <meta name="description" content="Portfolio et Carnet d'étude technique de Maxime Larrieu-Panini - Développeur Fullstack & Consultant Cloud (React, Node.js, Python, GCP, Architectures IA multi-agents)." />
+    <meta name="author" content="Maxime Larrieu-Panini" />
+    <link rel="canonical" href="https://maximelarrieu.io" />
+    <link rel="alternate" hreflang="fr" href="https://maximelarrieu.io" />
+    <link rel="alternate" hreflang="en" href="https://maximelarrieu.io/en" />
+    <link rel="alternate" hreflang="x-default" href="https://maximelarrieu.io" />
+    <link rel="alternate" type="application/rss+xml" title="Maxime Larrieu-Panini - Carnet d'étude (Flux RSS)" href="https://maximelarrieu.io/feed" />
+
+    <!-- Open Graph / Facebook / LinkedIn -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://maximelarrieu.io" />
+    <meta property="og:title" content="Maxime Larrieu-Panini | Développeur Fullstack & Consultant Cloud" />
+    <meta property="og:description" content="Portfolio et Carnet d'étude technique de Maxime Larrieu-Panini - Architecture Cloud, Fullstack, et IA Multi-Agents." />
+    <meta property="og:image" content="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1200" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://maximelarrieu.io" />
+    <meta name="twitter:title" content="Maxime Larrieu-Panini | Développeur Fullstack & Consultant Cloud" />
+    <meta name="twitter:description" content="Portfolio et Carnet d'étude technique de Maxime Larrieu-Panini - Architecture Cloud, Fullstack, et IA Multi-Agents." />
+    <meta name="twitter:image" content="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=1200" />
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,11 +39,18 @@
             },
             colors: {
               brand: {
-                50: '#f8fafc',
-                100: '#f1f5f9',
-                500: '#64748b',
-                900: '#0f172a',
-                950: '#020617',
+                50: '#FBFBFA',   // Warm mineral alabaster
+                100: '#F5F4F0',  // Warm paper surface
+                200: '#EAE7E1',  // Subtle stone border
+                500: '#736E64',  // Muted taupe/slate text
+                900: '#2C2A29',  // Deep warm graphite
+                950: '#1C1B1A',  // Deep espresso black
+              },
+              accent: {
+                soft: '#5E7065',  // Original Sage Green
+                hover: '#4C5D53',
+                warm: '#C97D60',  // Original Terracotta
+                warmHover: '#B26B4E',
               }
             }
           }
@@ -35,16 +63,200 @@
         width: 8px;
       }
       ::-webkit-scrollbar-track {
-        background: #0f172a;
+        background: #F5F4F0;
       }
       ::-webkit-scrollbar-thumb {
-        background: #334155;
+        background: #EAE7E1;
         border-radius: 4px;
       }
       ::-webkit-scrollbar-thumb:hover {
-        background: #475569;
+        background: #736E64;
+      }
+
+      /* Elegant Editorial Blog Content Typography */
+      .blog-content {
+        color: #2C2A29;
+        font-family: 'Inter', sans-serif;
+        line-height: 1.8;
+      }
+      .blog-content h1 {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-size: 2.125rem; /* 34px */
+        font-weight: 700;
+        color: #2C2A29;
+        margin-top: 2.75rem;
+        margin-bottom: 1.25rem;
+        line-height: 1.25;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #EAE7E1;
+      }
+      @media (min-width: 768px) {
+        .blog-content h1 {
+          font-size: 2.5rem; /* 40px */
+          margin-top: 3.25rem;
+        }
+      }
+      .blog-content h2 {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-size: 1.625rem; /* 26px */
+        font-weight: 700;
+        color: #2C2A29;
+        margin-top: 2.25rem;
+        margin-bottom: 1rem;
+        line-height: 1.3;
+      }
+      @media (min-width: 768px) {
+        .blog-content h2 {
+          font-size: 1.875rem; /* 30px */
+        }
+      }
+      .blog-content h3 {
+        font-family: 'Inter', sans-serif;
+        font-size: 1.25rem; /* 20px */
+        font-weight: 700;
+        color: #2C2A29;
+        margin-top: 1.75rem;
+        margin-bottom: 0.75rem;
+        line-height: 1.4;
+      }
+      @media (min-width: 768px) {
+        .blog-content h3 {
+          font-size: 1.375rem; /* 22px */
+        }
+      }
+      .blog-content h4 {
+        font-family: 'Inter', sans-serif;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #5E7065;
+        margin-top: 1.5rem;
+        margin-bottom: 0.5rem;
+      }
+      .blog-content p {
+        font-size: 1.0625rem; /* 17px */
+        line-height: 1.85;
+        color: #2C2A29;
+        margin-top: 1.15rem;
+        margin-bottom: 1.15rem;
+      }
+      .blog-content strong, .blog-content b {
+        font-weight: 700;
+        color: #1C1B1A;
+      }
+      .blog-content em, .blog-content i {
+        font-style: italic;
+      }
+      .blog-content a {
+        color: #5E7065;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        transition: color 0.2s ease;
+      }
+      .blog-content a:hover {
+        color: #2C2A29;
+      }
+      .blog-content ul {
+        list-style-type: disc;
+        padding-left: 1.75rem;
+        margin-top: 1.15rem;
+        margin-bottom: 1.25rem;
+      }
+      .blog-content ol {
+        list-style-type: decimal;
+        padding-left: 1.75rem;
+        margin-top: 1.15rem;
+        margin-bottom: 1.25rem;
+      }
+      .blog-content li {
+        margin-top: 0.4rem;
+        margin-bottom: 0.4rem;
+        line-height: 1.75;
+      }
+      .blog-content blockquote {
+        border-left: 4px solid #5E7065;
+        background-color: #F5F4F0;
+        padding: 1.25rem 1.5rem;
+        margin: 1.75rem 0;
+        border-radius: 0 0.75rem 0.75rem 0;
+        font-style: italic;
+        color: #5E7065;
+      }
+      .blog-content pre {
+        background-color: #1C1B1A;
+        color: #F5F4F0;
+        padding: 1.25rem 1.5rem;
+        border-radius: 1rem;
+        overflow-x: auto;
+        margin: 1.75rem 0;
+        border: 1px solid #2C2A29;
+        font-size: 0.9rem;
+        line-height: 1.6;
+      }
+      .blog-content code {
+        background-color: #F5F4F0;
+        color: #C97D60;
+        padding: 0.2rem 0.45rem;
+        border-radius: 0.375rem;
+        font-size: 0.88em;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        border: 1px solid #EAE7E1;
+      }
+      .blog-content pre code {
+        background-color: transparent;
+        color: inherit;
+        padding: 0;
+        border: none;
+      }
+      .blog-content img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 1rem;
+        margin: 2rem auto;
+        display: block;
+        border: 1px solid #EAE7E1;
+        box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.06);
+      }
+      .blog-content hr {
+        border: none;
+        border-top: 1px solid #EAE7E1;
+        margin: 2.5rem 0;
+      }
+      .blog-content .table-container {
+        width: 100%;
+        overflow-x: auto;
+        margin: 2rem 0;
+        border-radius: 1rem;
+        border: 1px solid #EAE7E1;
+        background: #FFFFFF;
+        box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.04);
+      }
+      .blog-content table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+        font-size: 0.95rem;
+      }
+      .blog-content th, .blog-content td {
+        border-bottom: 1px solid #EAE7E1;
+        padding: 0.875rem 1.25rem;
+        vertical-align: top;
+      }
+      .blog-content th {
+        background-color: #F5F4F0;
+        font-family: 'Playfair Display', Georgia, serif;
+        font-weight: 700;
+        color: #2C2A29;
+        font-size: 1rem;
+        border-bottom: 2px solid #E0DDD5;
+      }
+      .blog-content tr:last-child td {
+        border-bottom: none;
+      }
+      .blog-content tr:hover td {
+        background-color: rgba(245, 244, 240, 0.5);
       }
     </style>
+<!-- Commented out importmap to ensure single unified React bundle from Vite
   <script type="importmap">
 {
   "imports": {
@@ -59,8 +271,9 @@
   }
 }
 </script>
+-->
 </head>
-  <body class="bg-brand-950 text-slate-200 antialiased selection:bg-indigo-500 selection:text-white">
+  <body class="bg-brand-50 text-brand-900 antialiased selection:bg-accent-soft/20 selection:text-brand-900">
     <div id="root"></div>
     <script type="module" src="./index.tsx"></script>
   </body>
